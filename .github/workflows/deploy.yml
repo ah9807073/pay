@@ -1,0 +1,43 @@
+name: Deploy to DockerHub and Back4App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push backend Docker image
+      run: |
+        cd backend
+        docker build -t ah9807076/pay-backend:latest .
+        docker push ah9807076/pay-backend:latest
+
+    - name: Build and push frontend Docker image
+      run: |
+        cd frontend
+        docker build -t ah9807076/pay-frontend:latest .
+        docker push ah9807076/pay-frontend:latest
+
+    - name: Deploy to Back4App
+      run: |
+        curl -X POST your-back4app-deploy-endpoint \
+          -d {image: ah9807076/pay-backend:latest, name: BackendService}
+        curl -X POST your-back4app-deploy-endpoint \
+          -d {image: ah9807076/pay-frontend:latest, name: FrontendService}
+
