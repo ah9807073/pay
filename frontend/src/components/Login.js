@@ -8,7 +8,7 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("https://your-backend-url/api/auth/login", {
+      const response = await axios.post("https://pay-gray.vercel.app/api/auth/login", {
         email,
         password,
       });
